@@ -1,17 +1,15 @@
-FROM python:3.11-slim
+FROM python:3.10-slim-bullseye
 
-# Set working dir
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends --no-install-suggests \
+  build-essential default-libmysqlclient-dev pkg-config \
+  && pip install --no-cache-dir --upgrade pip
+
 WORKDIR /app
+COPY ./requirements.txt /app
+RUN pip install --no-cache-dir --requirement /app/requirements.txt
+COPY . /app
 
-# Install uv
-RUN pip install uv
-
-# Copy files
-COPY . .
-
-# Install dependencies
-RUN uv pip install -r requirements.txt
-
-# Expose and run
 EXPOSE 5000
-CMD ["uv", "pip", "run", "python", "main.py"]
+
+CMD ["python3", "server.py"]
