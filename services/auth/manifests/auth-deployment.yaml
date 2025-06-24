@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment  # Name of the deployment
+  labels:
+    app: auth  # Label to identify this deployment
+spec:
+  replicas: 2  # Run 2 instances of the auth app
+  selector:
+    matchLabels:
+      app: auth  # Selector for matching pods with the same label
+  strategy:
+    type: RollingUpdate  # Use rolling update to update pods without downtime
+    rollingUpdate:
+      maxSurge: 3  # Allow up to 3 extra pods during update
+  template:
+    metadata:
+      labels:
+        app: auth  # Labels to be applied to pods
+    spec:
+      containers:
+        - name: auth-api  # Name of the container
+          image: hydjing/flask-kubernetes-auth  # Docker image to use
+          ports:
+            - containerPort: 5000  # Expose this port from the container
+          envFrom:
+            - configMapRef:
+                name: auth-configmap  # Inject environment variables from ConfigMap
+            - secretRef:
+                name: auth-secret  # Inject sensitive env vars from Secret
