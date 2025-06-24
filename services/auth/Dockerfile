@@ -1,15 +1,26 @@
-FROM python:3.10-slim-bullseye
+FROM python:3.10-slim
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends --no-install-suggests \
-  build-essential default-libmysqlclient-dev pkg-config \
-  && pip install --no-cache-dir --upgrade pip
+# Install system dependencies needed for compiling mysqlclient
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    default-libmysqlclient-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
+# Install uv (recommended: pin version for reproducibility)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Set work directory
 WORKDIR /app
-COPY ./requirements.txt /app
-RUN pip install --no-cache-dir --requirement /app/requirements.txt
-COPY . /app
 
+# Copy project files
+COPY . .
+
+# Create and activate virtual environment in-project (like .venv)
+RUN uv venv && . .venv/bin/activate && uv pip install --all
+
+# Expose Flask app port
 EXPOSE 5000
 
-CMD ["python3", "server.py"]
+# Command to run Flask app
+CMD [".venv/bin/python", "main.py"]

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-configmap  # Name of the ConfigMap
+data:
+  # Environment variables for the auth service's MySQL connection
+  MYSQL_HOST: host.minikube.internal  # Hostname for MySQL (Minikube internal host)
+  MYSQL_USER: auth_user               # MySQL username
+  MYSQL_DB: auth                      # MySQL database name
+  MYSQL_PORT: "3306"                  # MySQL port (quoted as it's string by default in YAML)
