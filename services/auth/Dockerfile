@@ -1,5 +1,5 @@
 # Use a Python 3.10 slim-buster base image
-FROM python:3.10
+FROM python:3.10-slim
 
 # Set locale for Python to avoid encoding issues (using preferred 'key=value' format)
 ENV LANG=C.UTF-8
@@ -22,19 +22,7 @@ RUN pip install uv
 # Set working directory
 WORKDIR /app
 
-# Copy project files and lock file
-# IMPORTANT: Ensure your uv.lock file is generated using Python 3.10 for consistency!
-COPY pyproject.toml .
-COPY uv.lock .
-
-# Synchronize dependencies using uv sync (this command will create the .venv)
-# --mount=type=cache,target=/root/.cache/uv: Caches uv's downloads/builds for faster subsequent builds.
-# --mount=type=bind,source=uv.lock,target=uv.lock: Binds the uv.lock file to the build context.
-# --mount=type=bind,source=pyproject.toml,target=pyproject.toml: Binds pyproject.toml.
-# --locked: Installs dependencies strictly from uv.lock.
-# --no-install-project: Prevents uv from installing your project itself as a package into the venv.
-#                       This is typically desired for Flask apps where you just run the main script.
-# --no-dev: Excludes development dependencies from the installation.
+# see example: https://github.com/astral-sh/uv-docker-example/blob/main/standalone.Dockerfile
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
