@@ -9,11 +9,10 @@ using flask write microservices with kubernetes
 
 
 
-## Prepare
+## Prepare - for each service
 * github
 * uv
 * IDE
-* NPM + Node
 * kubectl
 * docker desktop
 * minikube
