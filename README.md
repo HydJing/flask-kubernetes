@@ -29,4 +29,8 @@ make sure kubernetes installed by checking `kubectl`
 
 install K9 to manage the k8s cluster
 
+### auth
 install python and mysql. run `uv sync` to install dependecies.
+
+### gateway
+install the k8s ingress tunnel as separate terminal `minikube addons enable ingress` then `minikube tunnel`
