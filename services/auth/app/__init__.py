@@ -2,6 +2,8 @@ import os
 from flask import Flask
 from flask_mysqldb import MySQL
 
+from .routes import auth_bp
+
 # App Factory
 
 mysql = MySQL()
@@ -19,7 +21,7 @@ def create_app():
     mysql.init_app(app)
 
     # Register routes
-    from .routes import auth_bp
+    
     app.register_blueprint(auth_bp)
 
     return app
