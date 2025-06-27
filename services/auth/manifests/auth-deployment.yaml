@@ -1,30 +1,66 @@
 apiVersion: apps/v1
 kind: Deployment
+
+# Metadata section defines the name and identity of the Deployment resource
 metadata:
-  name: auth-deployment  # Name of the deployment
+  name: auth-service-deployment           # Unique name for the deployment
+  namespace: auth-service                 # Namespace where the deployment resides
   labels:
-    app: auth  # Label to identify this deployment
+    app: auth                             # General app label for grouping
+    service: auth-api                     # Specific service label
+    tier: backend                         # Backend tier label
+    environment: production               # Environment label
+    project: flask-kubernetes             # Project identifier
+  annotations:
+    deployment.version: "v1.0.0"          # Optional: version of the deployment
+    updated-by: "Wei.Jing"                # Optional: person who made last changes
+    updated-at: "2025-06-27"              # Optional: last updated date
+
 spec:
-  replicas: 2  # Run 2 instances of the auth app
+  replicas: 2                             # Number of Pod replicas to run for load balancing and high availability
   selector:
     matchLabels:
-      app: auth  # Selector for matching pods with the same label
+      app: auth                           # Must match pod labels to bind them to this Deployment
   strategy:
-    type: RollingUpdate  # Use rolling update to update pods without downtime
+    type: RollingUpdate                   # Rolling update to avoid downtime during deployments
     rollingUpdate:
-      maxSurge: 3  # Allow up to 3 extra pods during update
+      maxSurge: 3                         # Max number of pods that can be created above desired count
+      maxUnavailable: 0                   # Max number of pods that can be unavailable during update
+
+  # Pod template used by this Deployment to create new Pods
   template:
     metadata:
       labels:
-        app: auth  # Labels to be applied to pods
+        app: auth                         # Labels to identify pods created by this Deployment
+        service: auth-api                 # Specific label for service discovery
     spec:
       containers:
-        - name: auth-api  # Name of the container
-          image: hydjing/flask-kubernetes-auth  # Docker image to use
+        - name: auth-api                  # Name of the container (not image)
+          image: hydjing/flask-kubernetes-auth:latest  # Docker image (consider using version tags in production)
+          imagePullPolicy: IfNotPresent   # Use local image if available, else pull from registry
           ports:
-            - containerPort: 5000  # Expose this port from the container
+            - containerPort: 5000         # Flask app runs on this port
           envFrom:
             - configMapRef:
-                name: auth-configmap  # Inject environment variables from ConfigMap
+                name: auth-service-config # Load env vars from ConfigMap
             - secretRef:
-                name: auth-secret  # Inject sensitive env vars from Secret
+                name: auth-service-secret # Load sensitive env vars from Secret
+          resources:
+            requests:
+              cpu: "100m"                 # Minimum guaranteed CPU
+              memory: "128Mi"             # Minimum guaranteed memory
+            limits:
+              cpu: "500m"                 # Maximum CPU allowed
+              memory: "512Mi"             # Maximum memory allowed
+          readinessProbe:
+            httpGet:
+              path: /health               # Health endpoint for readiness probe
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health               # Health endpoint for liveness probe
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20

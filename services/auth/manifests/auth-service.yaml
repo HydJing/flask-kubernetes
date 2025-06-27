@@ -1,12 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-service  # Name of the service, used for DNS resolution within the cluster
+  name: auth-service                    # Unique service name used for in-cluster DNS resolution
+  namespace: auth-service               # Namespace scoping (optional but recommended)
+  labels:
+    app: auth                          # Label to identify this service as part of the auth app
 spec:
   selector:
-    app: auth  # Targets Pods with the label "app: auth"
-  type: ClusterIP  # Exposes the service on a cluster-internal IP (default type)
+    app: auth                         # Selects pods with this label to route traffic to
+  type: ClusterIP                     # Internal cluster IP, accessible only within the cluster
   ports:
-    - port: 5000         # Port the service is exposed on internally
-      targetPort: 5000   # Port on the container to forward traffic to
-      protocol: TCP      # Protocol used for communication (TCP in this case)
+    - port: 5000                     # Port exposed by the Service inside the cluster
+      targetPort: 5000               # Container port the Service forwards traffic to
+      protocol: TCP                  # Communication protocol (TCP is default and common for HTTP)

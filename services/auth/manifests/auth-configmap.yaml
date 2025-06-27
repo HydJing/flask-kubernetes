@@ -1,10 +1,25 @@
 apiVersion: v1
 kind: ConfigMap
+
+# Metadata section contains identifying information about the ConfigMap
 metadata:
-  name: auth-configmap  # Name of the ConfigMap
+  name: auth-service-config                 # Unique name for this ConfigMap
+  namespace: auth-service                   # Kubernetes namespace where this ConfigMap applies
+  labels:
+    app: auth                               # Application name, used for selection and grouping
+    service: auth-api                       # Specific service name this config belongs to
+    tier: backend                           # Logical tier of the service (frontend/backend/etc.)
+    environment: production                 # Environment identifier (dev/staging/production)
+    project: flask-kubernetes               # Name of the overall project or application
+  annotations:
+    config.version: "v1.0.3"                # Optional: track config version
+    updated-by: "wei.jing"                  # Optional: who last modified this file
+    updated-at: "2025-06-24"                # Optional: when it was last updated
+
+# The data section contains key-value pairs that will be exposed as environment variables
 data:
-  # Environment variables for the auth service's MySQL connection
-  MYSQL_HOST: host.minikube.internal  # Hostname for MySQL (Minikube internal host)
-  MYSQL_USER: auth_user               # MySQL username
-  MYSQL_DB: auth                      # MySQL database name
-  MYSQL_PORT: "3306"                  # MySQL port (quoted as it's string by default in YAML)
+  # MySQL configuration for the Auth service
+  MYSQL_HOST: mysql-service                # Hostname of the MySQL database service
+  MYSQL_USER: auth_user                    # Database username to connect as
+  MYSQL_DB: auth                           # Database name to use
+  MYSQL_PORT: "3306"                       # Port MySQL is running on (must be a string in YAML)
