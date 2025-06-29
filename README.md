@@ -22,7 +22,7 @@ using flask write microservices with kubernetes
 
 - Auth: api service which hold authentiacation and authorization for users
 - Gateway: api service which handle convert video to mp3 service with user authentication.
-- RabbitMQ: event message broken which using persistent volume to keep queue data and interact with different services.
+- RabbitMQ: message broken which using persistent volume to keep queue data and interact with different services.
 
 
 ## start local instance/cluster
