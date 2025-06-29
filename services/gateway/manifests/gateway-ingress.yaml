@@ -1,21 +1,21 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: gateway-ingress
+  name: gateway-ingress  # Name of the Ingress resource
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    #nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "1024m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"          # Disable max body size limit (allow unlimited upload size)
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"     # Timeout in seconds for reading response from the proxied server
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"     # Timeout in seconds for transmitting request to the proxied server
+    # nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "1024m"  # Max temporary file size for buffering uploads (uncomment if needed)
 spec:
   rules:
-    - host: mp3converter.com # update hosts file
+    - host: mp3converter.com  # Hostname to match; update your local hosts file or DNS accordingly
       http:
         paths:
-          - path: /
-            pathType: Prefix
+          - path: /            # Match all requests starting with "/"
+            pathType: Prefix   # Use prefix matching for the path
             backend:
               service:
-                name: gateway
+                name: gateway  # Backend service name to route to
                 port:
-                  number: 8080
+                  number: 8080  # Port number on the backend service

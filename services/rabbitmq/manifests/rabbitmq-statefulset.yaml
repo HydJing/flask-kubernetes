@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq  # Name of the StatefulSet
+spec:
+  serviceName: "not-applicable"
+  selector:
+    matchLabels:
+      app: rabbitmq  # Selector to match pods belonging to this StatefulSet
+  replicas: 1  # Number of RabbitMQ instances (adjust as needed)
+  template:
+    metadata:
+      labels:
+        app: rabbitmq  # Labels applied to pods
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3-management  # RabbitMQ image with management UI included
+          ports:
+            - name: http                 # Management UI port
+              protocol: TCP
+              containerPort: 15672
+            - name: amqp                 # AMQP protocol port for messaging
+              protocol: TCP
+              containerPort: 5672
+          envFrom:
+            - configMapRef:
+                name: rabbitmq-configmap  # ConfigMap for non-sensitive config vars
+            - secretRef:
+                name: rabbitmq-secret     # Secret for sensitive data such as passwords
+          volumeMounts:
+            - name: rabbitmq-volume
+              mountPath: /var/lib/rabbitmq  # Data directory for RabbitMQ persistence
+      volumes:
+        - name: rabbitmq-volume
+          persistentVolumeClaim:
+            claimName: rabbitmq-pvc  # Persistent volume claim to persist RabbitMQ data across pod restarts
