@@ -1,8 +1,12 @@
 import jwt, datetime, os
 from flask import Blueprint, request, jsonify, current_app
-from . import mysql
+from .extensions import mysql
 
 auth_bp = Blueprint("auth", __name__)
+
+@auth_bp.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"}), 200
 
 @auth_bp.route("/login", methods=["POST"])
 def login():

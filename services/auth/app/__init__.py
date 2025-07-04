@@ -3,10 +3,9 @@ from flask import Flask
 from flask_mysqldb import MySQL
 
 from .routes import auth_bp
+from .extensions import mysql
 
 # App Factory
-
-mysql = MySQL()
 
 def create_app():
     app = Flask(__name__)
