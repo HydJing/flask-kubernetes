@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: rabbitmq  # Name of the StatefulSet
+  namespace: rabbitmq-message
 spec:
   serviceName: "not-applicable"
   selector:

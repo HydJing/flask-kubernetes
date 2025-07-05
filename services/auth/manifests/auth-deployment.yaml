@@ -37,14 +37,14 @@ spec:
       containers:
         - name: auth-api                  # Name of the container (not image)
           image: hydjing/flask-kubernetes-auth:latest  # Docker image (consider using version tags in production)
-          imagePullPolicy: IfNotPresent   # Use local image if available, else pull from registry
+          imagePullPolicy: Always         # Always use latest one
           ports:
             - containerPort: 5000         # Flask app runs on this port
           envFrom:
             - configMapRef:
                 name: auth-service-config # Load env vars from ConfigMap
             - secretRef:
-                name: auth-service-secret # Load sensitive env vars from Secret
+                name: auth-secret         # Load sensitive env vars from Secret
           resources:
             requests:
               cpu: "100m"                 # Minimum guaranteed CPU

@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()  # Load env vars from .env
 
-app = create_app()
+server = create_app()
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5002))
-    app.run(host="0.0.0.0", port=5002)
+    port = int(os.environ.get("PORT", 8080))
+    server.run(host="0.0.0.0", port=port)

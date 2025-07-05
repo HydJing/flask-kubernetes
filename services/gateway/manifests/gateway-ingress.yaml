@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: gateway-ingress  # Name of the Ingress resource
+  namespace: gateway-service
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"          # Disable max body size limit (allow unlimited upload size)
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"     # Timeout in seconds for reading response from the proxied server

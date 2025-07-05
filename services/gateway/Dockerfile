@@ -28,8 +28,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
 
+# Copy the rest of your application code
+# This should be done AFTER dependency installation to leverage Docker's layer caching.
 COPY . .
 
-EXPOSE 5002
+# Expose Flask port
+EXPOSE 8080
 
+# Run the app using the python executable from the virtual environment
 CMD [".venv/bin/python", "main.py"]
