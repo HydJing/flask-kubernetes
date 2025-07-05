@@ -41,45 +41,52 @@ install K9 to manage the k8s cluster
 
 in each service root folder, run `kubectl apply -f manifests/` to apply kubernetes configs.
 
-### auth
-install python and mysql. run `uv sync` to install dependecies. Then you might create namespace for auth-service
+### Auth
+go to the `/service/auth`, install python and mysql. run `uv sync` to install dependecies. Then you might create namespace for auth-service
 ```bash
 kubectl create namespace auth-service
 ```
 under `manifests` folders, apply k8s configuration
 ```bash
-kubectl apply -f ./ --namespace=auth-service
+kubectl apply -f ./manifest/ --namespace=auth-service
 ```
 also generate the a `Secret` named `auth-secret` in your current namespace.
 ```bash
 kubectl create secret generic auth-secret --from-env-file=.env -n auth-service --dry-run=client -o yaml | kubectl apply -f -
 ```
-> **NOTE:**  No need auth-secret.yml file here since we store the credentials in K8s Secret with namespace auth-service. Local environment only.
+> **NOTE:**  No need auth-secret.yml file here since we store the credentials in K8s Secret with namespace auth-service. Local environment only. env file value no need quote(s).
 
 ---
 
-### gateway
-
+### Gateway
+go to the `/service/gateway`, create k8s namespace for gateway service.
+```bash
+kubectl create namespace gateway-service
+```
 under `manifests` folders, apply k8s configuration
 ```bash
-# did not set up namespace for this service
-kubectl apply -f ./ 
+kubectl apply -f ./manifest/ --namespace=gateway-service
+```
+also generate the a `Secret` named `auth-secret` in your current namespace.
+```bash
+kubectl create secret generic gateway-secret --from-env-file=.env -n gateway-service --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-install the k8s ingress tunnel as separate terminal `minikube addons enable ingress` then `minikube tunnel`
+Install the k8s ingress tunnel as separate terminal `minikube addons enable ingress` then `minikube tunnel`
 
 ---
 
-### rabbitmq
-set up rabbitmq with persistent queue
+### Rabbitmq
+set up rabbitmq with persistent volume claim.
 
-under `manifests` folders, apply k8s configuration
+go to the `/service/rabbitmq`, apply k8s configuration
 ```bash
-# did not set up namespace for this service
-kubectl apply -f ./ 
+kubectl apply -f ./manifest/ --namespace=rabbitmq-message
 ```
 
-then run `k9s` to see running pod
+---
+
+then run `k9s` to see running pods
 
 
 
@@ -110,7 +117,10 @@ then run `k9s` to see running pod
     ```bash
     kubectl delete pod <pod-name>
     ```
-    
+5.  **k8s: check all services with all namespaces**
+    ```bash
+    kubectl get services --all-namespaces
+    ```   
 
 
 
