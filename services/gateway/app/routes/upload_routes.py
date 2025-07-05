@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from app.services import validate, storage
+from app.services import auth_service as validate, storage_service as storage
 from app.extensions import fs_videos, channel
 import json
 
