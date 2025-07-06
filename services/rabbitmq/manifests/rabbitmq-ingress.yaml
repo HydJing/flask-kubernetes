@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: rabbitmq-ingress
   namespace: rabbitmq-message
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
   rules:
     - host: rabbitmq-manager.com
@@ -12,6 +14,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: rabbitmq
+                name: rabbitmq-service
                 port:
                   number: 15672

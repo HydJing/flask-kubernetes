@@ -83,7 +83,12 @@ go to the `/service/rabbitmq`, apply k8s configuration
 ```bash
 kubectl apply -f ./manifest/ --namespace=rabbitmq-message
 ```
-
+once running go to http://rabbitmq-manager.com/ and use `guest` as both credentials. then create queues for video.
+```
+Type: Classic
+Name: video
+```
+ 
 ---
 
 then run `k9s` to see running pods
