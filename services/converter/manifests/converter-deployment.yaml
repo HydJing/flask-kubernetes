@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: converter-deployment
+  namespace: converter-service
+  labels:
+    app: converter
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: converter
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 8
+  template:
+    metadata:
+      labels:
+        app: converter
+        service: converter-api
+    spec:
+      containers:
+        - name: converter-api
+          image: hydjing/flask-kubernetes-converter
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: converter-service-configmap
+            - secretRef:
+                name: converter-secret

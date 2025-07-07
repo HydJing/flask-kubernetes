@@ -63,7 +63,7 @@ go to the `/service/gateway`, create k8s namespace for gateway service.
 ```bash
 kubectl create namespace gateway-service
 ```
-under `manifests` folders, apply k8s configuration
+apply k8s configuration
 ```bash
 kubectl apply -f ./manifest/ --namespace=gateway-service
 ```
@@ -79,7 +79,7 @@ Install the k8s ingress tunnel as separate terminal `minikube addons enable ingr
 ### Rabbitmq
 set up rabbitmq with persistent volume claim.
 
-go to the `/service/rabbitmq`, apply k8s configuration
+apply k8s configuration
 ```bash
 kubectl apply -f ./manifest/ --namespace=rabbitmq-message
 ```
@@ -87,6 +87,18 @@ once running go to http://rabbitmq-manager.com/ and use `guest` as both credenti
 ```
 Type: Classic
 Name: video
+```
+ 
+---
+
+### Converter
+go to the `/service/converter`, create k8s namespace for converter service.
+```bash
+kubectl create namespace gateway-service
+```
+apply the k8s configures.
+```bash
+kubectl apply -f ./manifest/ --namespace=converter-service
 ```
  
 ---
