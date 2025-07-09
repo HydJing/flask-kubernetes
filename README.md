@@ -105,7 +105,11 @@ kubectl apply -f ./manifest/ --namespace=converter-service
 
 then run `k9s` to see running pods
 
-
+also need update local DNS file
+```bash
+127.0.0.1 mp3converter.com
+127.0.0.1 rabbitmq-manager.com
+```
 
 ## Usuful commands
 
@@ -134,10 +138,18 @@ then run `k9s` to see running pods
     ```bash
     kubectl delete pod <pod-name>
     ```
-5.  **k8s: check all services with all namespaces**
+6.  **k8s: check all services with all namespaces**
     ```bash
     kubectl get services --all-namespaces
-    ```   
+    ```
+7.  **k8s: using pod curl URL or other service**
+    ```bash
+    kubectl exec -it <pod-name> -n <namespaces> -- curl auth-service.auth-service.svc.cluster.local:5000/health
+    ```
+7.  **k8s: scale running pods**
+    ```bash
+    kubectl scale deployment --replicas=1 <deployment-name> -n <namespaces>
+    ```
 
 
 
@@ -159,3 +171,16 @@ then run `k9s` to see running pods
     docker run -p 5000:5000 --env-file .env local-flask-k8s-auth-service:latest
     ```
 
+### Usage
+
+**Gateway login**
+```bash
+curl -X POST http://mp3converter.com/auth/login -u <db_user_name:db_user_pw>
+```
+it should return an access token
+
+**Gateway login**
+upload file under converter folder
+```bash
+curl -X POST -F 'file=@<file_path>' -H '<access_token>' http://mp3converter.com/upload
+```

@@ -19,7 +19,7 @@ metadata:
 # The data section contains key-value pairs that will be exposed as environment variables
 data:
   # MySQL configuration for the Auth service
-  MYSQL_HOST: mysql-service                # Hostname of the MySQL database service
+  MYSQL_HOST: host.minikube.internal       # Hostname of the MySQL database service
   MYSQL_USER: auth_user                    # Database username to connect as
   MYSQL_DB: auth                           # Database name to use
   MYSQL_PORT: "3306"                       # Port MySQL is running on (must be a string in YAML)

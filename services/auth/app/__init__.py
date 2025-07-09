@@ -1,9 +1,17 @@
-import os
+import os, sys, logging
 from flask import Flask
 from flask_mysqldb import MySQL
 
 from .routes import auth_bp
 from .extensions import mysql
+
+# Configure basic logging for the app (ensure this is done once, early)
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    stream=sys.stdout
+)
+logger = logging.getLogger(__name__) # Get a logger for this module
 
 # App Factory
 
