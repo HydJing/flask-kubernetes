@@ -1,0 +1,9 @@
+# storageclass.yaml (Example for Minikube, or a cloud provider)
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-storage
+  namespace: mongodb-service
+provisioner: k8s.io/minikube-hostpath # Or "kubernetes.io/gce-pd" for GCP, "ebs.csi.aws.com" for AWS, etc.
+reclaimPolicy: Retain # Or Delete
+volumeBindingMode: Immediate # Or WaitForFirstConsumer

@@ -1,0 +1,17 @@
+# mongodb-headless-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service # This will be the base DNS name for pods (e.g., mongo-0.mongodb-service)
+  namespace: mongodb-service
+  labels:
+    app: mongodb
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+      protocol: TCP
+      name: mongodb
+  selector:
+    app: mongodb # Matches the labels of the StatefulSet's pods
+  clusterIP: None # This makes it a Headless Service

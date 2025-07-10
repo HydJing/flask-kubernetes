@@ -21,8 +21,8 @@ def create_app():
     server = Flask(__name__)
 
     # --- App Configuration ---
-    server.config["MONGO_URI_VIDEO"] = os.getenv("MONGO_URI_VIDEO", "mongodb://host.minikube.internal:27017/videos").strip()
-    server.config["MONGO_URI_MP3"] = os.getenv("MONGO_URI_MP3", "mongodb://host.minikube.internal:27017/mp3s").strip()
+    server.config["MONGO_URI_VIDEO"] = os.getenv("MONGO_URI_VIDEO", "mongodb://<mongodb_username>:<mongodb_password>@mongodb-service.mongodb-service.svc.cluster.local:27017/videos?authSource=admin").strip()
+    server.config["MONGO_URI_MP3"] = os.getenv("MONGO_URI_MP3", "mongodb://<mongodb_username>:<mongodb_password>@mongodb-service.mongodb-service.svc.cluster.local:27017/mp3s?authSource=admin").strip()
     server.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "a_strong_default_secret_key_for_dev_only")
     server.config["DEBUG"] = os.getenv("DEBUG", "False").lower() == "true"
     server.config["RABBITMQ_HOST"] = os.getenv("RABBITMQ_HOST", "rabbitmq-service.default.svc.cluster.local").strip()

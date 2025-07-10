@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: mongodb-service
+spec:
+  serviceName: "mongodb-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:6 # Ensure this image has 'sh' or 'bash' and 'mongosh'
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          envFrom: # This is correct for the main container environment
+            - secretRef:
+                name: mongodb-secret
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          # --- CORRECTED LIVENESS PROBE ---
+          livenessProbe:
+            exec:
+              # Execute the command using 'sh -c' to enable environment variable expansion
+              command:
+                - sh
+                - -c
+                - >
+                  mongosh --eval "db.adminCommand('ping')"
+                  -u $MONGO_INITDB_ROOT_USERNAME
+                  -p $MONGO_INITDB_ROOT_PASSWORD
+                  --authenticationDatabase admin
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          # --- CORRECTED READINESS PROBE ---
+          readinessProbe:
+            exec:
+              # Execute the command using 'sh -c' to enable environment variable expansion
+              command:
+                - sh
+                - -c
+                - >
+                  mongosh --eval "db.adminCommand('ping')"
+                  -u $MONGO_INITDB_ROOT_USERNAME
+                  -p $MONGO_INITDB_ROOT_PASSWORD
+                  --authenticationDatabase admin
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: fast-storage
+        resources:
+          requests:
+            storage: 5Gi

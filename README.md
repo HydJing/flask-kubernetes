@@ -26,7 +26,7 @@ using flask write microservices with kubernetes
 
 
 ## Environment varibales
-copy and paste the file `.env.example` and rename to `.env` for local environment variables.
+copy and paste the file `.env.example` and rename to `.env` for local environment variables for each service. for Mongodb service, the username and password need updated in gateway secret value for `MONGO_URI_VIDEO` and `MONGO_URI_MP3`
 
 
 ## Start local instance/cluster
@@ -48,7 +48,7 @@ kubectl create namespace auth-service
 ```
 under `manifests` folders, apply k8s configuration
 ```bash
-kubectl apply -f ./manifest/ --namespace=auth-service
+kubectl apply -f ./manifests/ --namespace=auth-service
 ```
 also generate the a `Secret` named `auth-secret` in your current namespace.
 ```bash
@@ -65,7 +65,7 @@ kubectl create namespace gateway-service
 ```
 apply k8s configuration
 ```bash
-kubectl apply -f ./manifest/ --namespace=gateway-service
+kubectl apply -f ./manifests/ --namespace=gateway-service
 ```
 also generate the a `Secret` named `auth-secret` in your current namespace.
 ```bash
@@ -78,10 +78,13 @@ Install the k8s ingress tunnel as separate terminal `minikube addons enable ingr
 
 ### Rabbitmq
 set up rabbitmq with persistent volume claim.
-
+create k8s namespace for the API service.
+```bash
+kubectl create namespace rabbitmq-message
+```
 apply k8s configuration
 ```bash
-kubectl apply -f ./manifest/ --namespace=rabbitmq-message
+kubectl apply -f ./manifests/ --namespace=rabbitmq-message
 ```
 once running go to http://rabbitmq-manager.com/ and use `guest` as both credentials. then create queues for video.
 ```
@@ -99,6 +102,23 @@ kubectl create namespace gateway-service
 apply the k8s configures.
 ```bash
 kubectl apply -f ./manifest/ --namespace=converter-service
+```
+ 
+---
+
+### MongoDB
+set up Mongodb as K8s service.
+create k8s namespace for the API service.
+```bash
+kubectl create namespace mongodb-service
+```
+apply k8s configuration
+```bash
+kubectl apply -f ./manifests/ --namespace=mongodb-service
+```
+also generate the a `Secret` named `mongodb-secret` in your current namespace.
+```bash
+kubectl create secret generic mongodb-secret --from-env-file=.env -n mongodb-service --dry-run=client -o yaml | kubectl apply -f -
 ```
  
 ---
@@ -184,3 +204,6 @@ upload file under converter folder
 ```bash
 curl -X POST -F 'file=@<file_path>' -H '<access_token>' http://mp3converter.com/upload
 ```
+
+
+### TODO
