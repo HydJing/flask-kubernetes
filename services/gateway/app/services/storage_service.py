@@ -5,7 +5,7 @@ import logging
 import os
 from flask import current_app 
 from pymongo.errors import PyMongoError
-from pika.exceptions import AMQPConnectionError, ChannelClosedByBroker
+import pika
 import gridfs 
 from app.extensions import get_rabbitmq_channel, mongo_video
 
@@ -66,7 +66,7 @@ def upload(f, access):
 
     # --- 3. Publish message to RabbitMQ ---
     try:
-        video_queue = current_app.config.get("VIDEO_QUEUE", "video_queue_default")
+        video_queue = current_app.config.get("VIDEO_QUEUE", "video")
         channel.basic_publish(
             exchange="",
             routing_key=video_queue,
@@ -77,7 +77,7 @@ def upload(f, access):
         )
         logger.info(f"UPLOAD FUNCTION: Message published to RabbitMQ for FID: {fid}")
         return "File uploaded and queued for processing", 202
-    except (AMQPConnectionError, ChannelClosedByBroker) as e:
+    except (pika.exceptions.AMQPConnectionError, pika.exceptions.ChannelClosedByBroker) as e:
         logger.error(f"UPLOAD FUNCTION: RabbitMQ publish failed for FID {fid}: {e}", exc_info=True)
         if fid:
             try:

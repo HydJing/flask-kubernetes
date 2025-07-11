@@ -26,7 +26,9 @@ using flask write microservices with kubernetes
 
 
 ## Environment varibales
-copy and paste the file `.env.example` and rename to `.env` for local environment variables for each service. for Mongodb service, the username and password need updated in gateway secret value for `MONGO_URI_VIDEO` and `MONGO_URI_MP3`
+copy and paste the file `.env.example` and rename to `.env` for local environment variables for each service. 
+
+For Mongodb service, the username and password need updated in converter secret value for `MONGO_INITDB_ROOT_USERNAME` and `MONGO_INITDB_ROOT_PASSWORD`.
 
 
 ## Start local instance/cluster
@@ -67,7 +69,7 @@ apply k8s configuration
 ```bash
 kubectl apply -f ./manifests/ --namespace=gateway-service
 ```
-also generate the a `Secret` named `auth-secret` in your current namespace.
+also generate the a `Secret` named `gateway-secret` in your current namespace.
 ```bash
 kubectl create secret generic gateway-secret --from-env-file=.env -n gateway-service --dry-run=client -o yaml | kubectl apply -f -
 ```
@@ -103,6 +105,10 @@ apply the k8s configures.
 ```bash
 kubectl apply -f ./manifest/ --namespace=converter-service
 ```
+also generate the a `Secret` named `converter-secret` in your current namespace.
+```bash
+kubectl create secret generic converter-secret --from-env-file=.env -n converter-service --dry-run=client -o yaml | kubectl apply -f -
+```
  
 ---
 
@@ -136,7 +142,7 @@ also need update local DNS file
 ### K8S/Minikube commands
 0.  **k8s: get all pods**
     ```bash
-    kubectl get pods
+    kubectl get pods -A
     ```
 1.  **k8s: Inspecting specific pod with detail state**
     ```bash
@@ -156,7 +162,7 @@ also need update local DNS file
     ```
 5.  **k8s: delete specific pod**
     ```bash
-    kubectl delete pod <pod-name>
+    kubectl delete pod/statefulset <pod/statefulset-name> -n <namespace>
     ```
 6.  **k8s: check all services with all namespaces**
     ```bash
@@ -166,10 +172,11 @@ also need update local DNS file
     ```bash
     kubectl exec -it <pod-name> -n <namespaces> -- curl auth-service.auth-service.svc.cluster.local:5000/health
     ```
-7.  **k8s: scale running pods**
+8.  **k8s: scale running pods**
     ```bash
     kubectl scale deployment --replicas=1 <deployment-name> -n <namespaces>
     ```
+
 
 
 

@@ -11,7 +11,7 @@ ENV LC_ALL=C.UTF-8
 # pkg-config is essential for mysqlclient to find its dependencies during build.
 RUN apt-get update && apt-get install -y \
     build-essential \
-    default-libmysqlclient-dev \
+    ffmpeg \
     pkg-config \
     curl \
     && rm -rf /var/lib/apt/lists/*
@@ -30,10 +30,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Copy the rest of your application code
 # This should be done AFTER dependency installation to leverage Docker's layer caching.
-COPY . .
-
-# Expose Flask port
-EXPOSE 8080
+COPY . /app
 
 # Run the app using the python executable from the virtual environment
 CMD [".venv/bin/python", "main.py"]

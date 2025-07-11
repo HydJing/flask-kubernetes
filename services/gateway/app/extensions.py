@@ -5,7 +5,7 @@ import os
 import pika
 from flask import g, current_app
 from flask_pymongo import PyMongo
-from pika.exceptions import AMQPConnectionError, ChannelClosedByBroker
+import pika
 import gridfs # Import gridfs here
 
 logger = logging.getLogger(__name__)
@@ -93,13 +93,13 @@ def get_rabbitmq_channel():
             g.rabbitmq_channel = channel
 
             # Declare queues (idempotent operation, safe to call on each new channel)
-            video_queue = current_app.config.get("VIDEO_QUEUE", "video_queue_default")
-            mp3_queue = current_app.config.get("MP3_QUEUE", "mp3_queue_default")
+            video_queue = current_app.config.get("VIDEO_QUEUE", "video")
+            mp3_queue = current_app.config.get("MP3_QUEUE", "mp3")
             channel.queue_declare(queue=video_queue, durable=True)
             channel.queue_declare(queue=mp3_queue, durable=True)
             logger.info(f"RABBITMQ_GET: Queues '{video_queue}' and '{mp3_queue}' declared.")
 
-        except (AMQPConnectionError, ChannelClosedByBroker) as e:
+        except (pika.exceptions.AMQPConnectionError, pika.exceptions.ChannelClosedByBroker) as e:
             logger.error(f"RABBITMQ_GET: Failed to connect to RabbitMQ at {rabbitmq_host}:{rabbitmq_port}: {e}", exc_info=True)
             # Ensure any partially created connection/channel is cleaned up
             if 'rabbitmq_connection' in g and g.rabbitmq_connection and not g.rabbitmq_connection.is_closed:

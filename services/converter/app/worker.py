@@ -2,19 +2,37 @@ import os, sys, json, pika, gridfs, tempfile
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from moviepy import VideoFileClip
-from dotenv import load_dotenv
 
-load_dotenv()
 
 def start_worker():
     try:
         print("Converter worker starting...")
-        client = MongoClient(os.environ.get("MONGO_HOST", "host.minikube.internal"), 27017)
+        
+        # Get MongoDB credentials from environment variables
+        mongo_host = os.environ.get("MONGO_HOST", "mongodb-service.mongodb-service.svc.cluster.local")
+        mongo_username = os.environ.get("MONGO_INITDB_ROOT_USERNAME")
+        mongo_password = os.environ.get("MONGO_INITDB_ROOT_PASSWORD")
+        rabbitmq_host=os.environ.get("RABBITMQ_HOST", "rabbitmq-service.rabbitmq-message.svc.cluster.local")
+        rabbitmq_port=int(os.environ.get("RABBITMQ_PORT", "5672"))
+
+        # Construct the MongoDB connection URI with authentication
+        # Format: mongodb://username:password@host:port/database?authSource=admin
+        # The 'admin' database is where the root user is defined.
+        mongo_host = f"mongodb://{mongo_username}:{mongo_password}@{mongo_host}:27017/?authSource=admin"
+
+        # Initialize MongoClient with the full URI
+        client = MongoClient(mongo_host, 27017)
+
+        # The databases for GridFS are still taken from env vars or defaults
         fs_videos = gridfs.GridFS(client[os.environ.get("VIDEO_DB", "videos")])
         fs_mp3s = gridfs.GridFS(client[os.environ.get("MP3_DB", "mp3s")])
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ.get("RABBITMQ_HOST"), port=os.environ.get("RABBITMQ_PORT")))
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbitmq_host, port=rabbitmq_port))
         channel = connection.channel()
+
+        # Explicitly declare queues (good practice)
+        channel.queue_declare(queue=os.environ.get("VIDEO_QUEUE", "video"), durable=True) 
+        channel.queue_declare(queue=os.environ.get("MP3_QUEUE", "mp3"), durable=True)   
 
         def callback(ch, method, properties, body):
             try:

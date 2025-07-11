@@ -6,26 +6,26 @@ metadata:
   labels:
     app: converter
 spec:
-  replicas: 2
+  replicas: 1 # Good for high availability/throughput for a worker
   selector:
     matchLabels:
       app: converter
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 4
+      maxSurge: 4 # Standard rolling update settings
   template:
     metadata:
       labels:
         app: converter
-        service: converter-api
+        service: converter-api # This label is important for the Service selector
     spec:
       containers:
-        - name: converter-api
-          image: hydjing/flask-kubernetes-converter
-          imagePullPolicy: Always
+        - name: converter-api # Container name
+          image: hydjing/flask-kubernetes-converter # Your Docker image
+          imagePullPolicy: Always # Good for development to ensure latest image
           envFrom:
             - configMapRef:
-                name: converter-service-configmap
+                name: converter-service-configmap # References your ConfigMap
             - secretRef:
-                name: converter-secret
+                name: converter-secret # References your Secret

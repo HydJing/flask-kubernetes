@@ -11,7 +11,6 @@ ENV LC_ALL=C.UTF-8
 # pkg-config is essential for mysqlclient to find its dependencies during build.
 RUN apt-get update && apt-get install -y \
     build-essential \
-    default-libmysqlclient-dev \
     pkg-config \
     curl \
     && rm -rf /var/lib/apt/lists/*
