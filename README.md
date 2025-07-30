@@ -88,22 +88,26 @@ apply k8s configuration
 ```bash
 kubectl apply -f ./manifests/ --namespace=rabbitmq-message
 ```
-once running go to http://rabbitmq-manager.com/ and use `guest` as both credentials. then create queues for video.
+now try run below command to get url for cluster URL to open RabbitMQ admin page
+```
+minikube service rabbitmq-service -n rabbitmq-message --url
+```
+once running go to URL and use `guest` as both credentials. then create queues for video.
 ```
 Type: Classic
 Name: video
 ```
- 
+
 ---
 
 ### Converter
 go to the `/service/converter`, create k8s namespace for converter service.
 ```bash
-kubectl create namespace gateway-service
+kubectl create namespace converter-service
 ```
 apply the k8s configures.
 ```bash
-kubectl apply -f ./manifest/ --namespace=converter-service
+kubectl apply -f ./manifests/ --namespace=converter-service
 ```
 also generate the a `Secret` named `converter-secret` in your current namespace.
 ```bash
@@ -126,7 +130,11 @@ also generate the a `Secret` named `mongodb-secret` in your current namespace.
 ```bash
 kubectl create secret generic mongodb-secret --from-env-file=.env -n mongodb-service --dry-run=client -o yaml | kubectl apply -f -
 ```
- 
+get mongodb service name and get access to DB
+```
+kubectl get pods -n mongodb-service -l app=mongodb
+kubectl exec -it mongodb-0 -n mongodb-service -- mongosh -u <username> -p <password> --authenticationDatabase admin
+```
 ---
 
 then run `k9s` to see running pods
@@ -175,6 +183,10 @@ also need update local DNS file
 8.  **k8s: scale running pods**
     ```bash
     kubectl scale deployment --replicas=1 <deployment-name> -n <namespaces>
+    ```
+9.  **k8s: login to Mongodb**
+    ```bash
+    kubectl exec -it mongodb-0 -n <mongodb_namespace> -- mongosh -u <mongodb_username> -p <mongodb_password> --authenticationDatabase admin
     ```
 
 
