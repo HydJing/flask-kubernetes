@@ -17,6 +17,6 @@ spec:
             pathType: Prefix   # Use prefix matching for the path
             backend:
               service:
-                name: gateway  # Backend service name to route to
+                name: gateway-service  # Backend service name to route to
                 port:
                   number: 8080  # Port number on the backend service

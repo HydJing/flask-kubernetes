@@ -133,7 +133,12 @@ kubectl create secret generic mongodb-secret --from-env-file=.env -n mongodb-ser
 get mongodb service name and get access to DB
 ```
 kubectl get pods -n mongodb-service -l app=mongodb
-kubectl exec -it mongodb-0 -n mongodb-service -- mongosh -u <username> -p <password> --authenticationDatabase admin
+kubectl exec -it <pod_name> -n mongodb-service -- mongosh -u <username> -p <password> --authenticationDatabase admin
+```
+now finds the files data:
+```
+use mp3s
+db.fs.files.find({}, { _id: 1, filename: 1, uploadDate: 1, length: 1 }).pretty()
 ```
 ---
 
@@ -218,10 +223,16 @@ curl -X POST http://mp3converter.com/auth/login -u <db_user_name:db_user_pw>
 ```
 it should return an access token
 
-**Gateway login**
+**Gateway upload file**
 upload file under converter folder
 ```bash
-curl -X POST -F 'file=@<file_path>' -H '<access_token>' http://mp3converter.com/upload
+curl -X POST "http://mp3converter.com/upload" -F "file=@<file_path>" -H "Authorization: Bearer <access_token>"
+```
+
+**Gateway download file**
+download file from URL
+```bash
+curl -X GET -H "Authorization: Bearer <access_token>" "http://mp3converter.com/download/?fid=<fs_id>" -o "downloaded_mp3_from_api.mp3"
 ```
 
 
