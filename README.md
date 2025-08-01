@@ -43,6 +43,8 @@ install K9 to manage the k8s cluster
 
 in each service root folder, run `kubectl apply -f manifests/` to apply kubernetes configs.
 
+---
+
 ### Auth
 go to the `/service/auth`, install python and mysql. run `uv sync` to install dependecies. Then you might create namespace for auth-service
 ```bash
@@ -142,7 +144,21 @@ db.fs.files.find({}, { _id: 1, filename: 1, uploadDate: 1, length: 1 }).pretty()
 ```
 ---
 
-then run `k9s` to see running pods
+### Notification
+set up notification service.
+```bash
+kubectl create namespace notification-service
+```
+also generate the a `Secret` named `notification-secret` in your current namespace.
+```bash
+kubectl create secret generic notification-secret --from-env-file=.env -n notification-service --dry-run=client -o yaml | kubectl apply -f -
+```
+This will send email to the MySQL auth.user table record value.
+---
+
+### MISC
+
+Run `k9s` to see running pods
 
 also need update local DNS file
 ```bash

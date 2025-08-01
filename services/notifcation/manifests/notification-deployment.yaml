@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-deployment
+  namespace: notification-service
+  labels:
+    app: notification
+spec:
+  replicas: 2 #4
+  selector:
+    matchLabels:
+      app: notification
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 4 #8
+  template:
+    metadata:
+      labels:
+        app: notification
+        service: notification-api
+    spec:
+      containers:
+        - name: notification-api
+          image: hydjing/flask-kubernetes-notification
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: notification-configmap
+            - secretRef:
+                name: notification-secret
