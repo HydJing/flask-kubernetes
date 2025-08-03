@@ -38,6 +38,15 @@ def init_extensions(app):
         # If the URI is bad, PyMongo operations will raise errors.
         logger.info("INIT_EXTENSIONS: PyMongo extensions configured. Connections will be established on first use.")
 
+        if 'pymongo' not in app.extensions:
+            app.extensions['pymongo'] = {}
+    
+        app.extensions['pymongo']['mongo_video'] = mongo_video
+        app.extensions['pymongo']['mongo_mp3'] = mongo_mp3
+        logger.info("INIT_EXTENSIONS: App extension pymongo has set DBs.")
+        logger.info(f"App Pymongo Config: mongo_video = '{app.extensions['pymongo']['mongo_video']}'")
+        logger.info(f"App Pymongo Config: mongo_mp3 = '{app.extensions['pymongo']['mongo_mp3']}'")
+
     except Exception as e:
         logger.critical(f"INIT_EXTENSIONS: CRITICAL ERROR during MongoDB initialization: {e}", exc_info=True)
         # Re-raise to prevent app startup with broken DB config
