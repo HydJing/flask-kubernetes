@@ -253,3 +253,8 @@ curl -X GET -H "Authorization: Bearer <access_token>" "http://mp3converter.com/d
 
 
 ### TODO
+ - Unit tests for each service.
+ - error handling with centralized cloud-native logging 
+ - secure enviroment variables using secret manager in CICD
+ - try deploy with CICD and cloud-native platform
+ - messages that fail processing to DeadLetterQueue(DLQ) for later review
